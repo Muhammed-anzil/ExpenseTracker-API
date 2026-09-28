@@ -3,12 +3,13 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.authentication import BasicAuthentication,TokenAuthentication
+from rest_framework.authentication import BasicAuthentication,TokenAuthentication,BaseAuthentication
 from rest_framework.permissions import IsAuthenticated
 from expense.serializers import UserSerializer,ExpenseSerializer
 from django.contrib.auth.models import User
 from expense.models import Expenses
 from django.utils import timezone
+from expense.permissions import IsOwner
 from django.db.models import Sum
 
 # Create your views here.
@@ -24,7 +25,7 @@ class RegisterView(ViewSet):
 
 class ExpenseView(ViewSet):
     authentication_classes=[TokenAuthentication]
-    permission_classes=[IsAuthenticated]
+    permission_classes=[IsOwner]
 
     def create(self,request):
         dser=ExpenseSerializer(data=request.data)
@@ -61,7 +62,7 @@ class ExpenseView(ViewSet):
 
 class ExpenseSummeryView(APIView):
     authentication_classes=[TokenAuthentication]
-    permission_classes=[IsAuthenticated]
+    permission_classes=[IsOwner]
 
     def get(self,request):
         cur_date=timezone.now()
